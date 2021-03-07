@@ -4,7 +4,8 @@
     "name": "sammons"
   },
   "scripts": {
-    "webpack": "webpack --config webpack/webpack.config.js"
+    "webpack": "webpack --config webpack/webpack.config.js",
+    "build": "mkdir -p docs && npm run webpack && cp static/*.html docs && cp dist/* docs"
   },
   "dependencies": {
     "babel-loader": "^8.2.2",
@@ -20,9 +21,6 @@
     "bootstrap": "^4.6.0",
     "eslint": "^7.21.0",
     "prettier": "^2.2.1",
-    "react": "^17.0.1",
-    "react-bootstrap": "^1.5.1",
-    "react-dom": "^17.0.1",
     "typescript": "^4.2.3",
     "webpack-cli": "^4.5.0"
   }
