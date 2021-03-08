@@ -1,11 +1,187 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Square Weave Simulator</title>
+  <link rel="stylesheet" href="pure.css">
+  <style>
+    body,
+    html {
+      width: 100%;
+      height: 100%;
+      margin: 0px;
+      padding: 0px;
+      overflow-x: hidden;
+    }
+
+    .pure-menu-static {
+      margin: 0;
+      color: #333;
+      background-color: white;
+      text-align: center;
+      /* padding: 2.5em 2em 0; */
+      border-bottom: 1px solid #eee;
+      opacity: 1;
+      z-index: 1;
+      width: 100%;
+      position: static;
+    }
+
+    .content {
+      height: 100%;
+      margin: 0 auto;
+      padding: 0 1em;
+      /* max-width: 800px; */
+      margin-top: 50px;
+      margin-bottom: 50px;
+      line-height: 1.6em;
+    }
+
+    canvas {
+      border: 1px solid #eee;
+      width: 88%;
+      max-width: 500px;
+    }
+
+    .pure-form,
+    .pure-g {
+      padding: 0 0 0.5em 0;
+    }
+
+    .pure-g button {
+      margin-right: 0.5em;
+    }
+
+    .pure-u-1-3 {
+      margin-right: 0.5em;
+      box-sizing: border-box;
+      flex-direction: column;
+      flex-basis: content;
+    }
+
+    .td-input-num {
+      appearance: none;
+      width: 100%;
+      height: 100%;
+      line-height: 200%;
+      margin: 0;
+      padding: 0;
+      border: none;
+      outline: none;
+    }
+
+    td:hover {
+      cursor: pointer;
+    }
+
+    .quick-pick {
+      border: 1px solid #eee;
+      margin-left: 0.2em;
+      height: 25px;
+      width: 70px;
+    }
+    .quick-pick:hover {
+      cursor: pointer;
+    }
+  </style>
 </head>
+
 <body>
-  Hello World
+  <div class="pure-menu">
+    <div class="pure-menu-horizontal pure-menu-static">
+      <ul class="pure-menu-list">
+        <li class="pure-menu-item pure-menu-selected"><a href="#" class="pure-menu-link">Welcome</a></li>
+        <!-- <li class="pure-menu-item"><a href="#" class="pure-menu-link">About</a></li> -->
+      </ul>
+    </div>
+  </div>
+  <div class="content">
+    <h3>Square Weave Simulator</h3>
+    <div>
+      This page takes some inputs about the loom size and number of nails (which you wrap yarn around)
+      and renders a picture of what the finished product might look like!
+    </div>
+    <br>
+    <div>
+      <form class="pure-form pure-form-aligned">
+        <div class="pure-g">
+          <span class="pure-u-1-5">Recent Picks:</span>
+          <span class="pure-u-1-5 quick-pick" id="pick-0" hidden></span>
+          <span class="pure-u-1-5 quick-pick" id="pick-1" hidden></span>
+          <span class="pure-u-1-5 quick-pick" id="pick-2" hidden></span>
+          <span class="pure-u-1-5 quick-pick" id="pick-3" hidden></span>
+          <span class="pure-u-1-5 quick-pick" id="pick-4" hidden></span>
+        </div>
+        <div>
+          <label for="color-selection-type">Use Hex Codes</label>
+          <input class="pure-input-1-5" type="checkbox" id="color-selection-type">
+          <label for="color-selection" id="color-selection-label">Color</label>
+          <input class="pure-input-1-5" type="color" id="color-selection">
+          <label for="hex-color-selection" hidden id="hex-color-selection-label">Color</label>
+          <input class="pure-input-1-5" hidden type="text" placeholder="e.g. #aaabbb" id="hex-color-selection">
+          <br>
+          <label for="nail-selection">Nails of that color</label>
+          <input class="pure-input-1-5" type="number" id="nail-selection" placeholder="e.g. 90">
+        </div>
+        <button class="pure-button" id="add-selection">Add</button>
+      </form>
+      <div class="pure-g">
+        <div class="pure-u-1-3">
+          <p>
+            Copy rows
+          </p>
+          <button class="pure-button" id='copy-rows'>Copy</button>
+        </div>
+        <div class="pure-u-1-3">
+          <p>
+            Reverse rows
+          </p>
+          <button class="pure-button" id='reverse-rows'>Reverse</button>
+        </div>
+        <div class="pure-u-1-3">
+          <p>
+            Delete rows
+          </p>
+          <button class="pure-button" id='delete-rows'>Delete</button>
+        </div>
+      </div>
+      <table hidden>
+        <tbody id="prototype-row-container">
+          <tr>
+            <td></td>
+            <td><input class="td-input-num" type="number" value=1 /></td>
+            <td></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+      <table class="pure-table pure-table-bordered" >
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nails</th>
+            <th>Color</th>
+            <th>Selected</th>
+          </tr>
+        </thead>
+        <tbody id="data-table">
+        </tbody>
+      </table>
+      <br>
+      Total Nails (on one side): <span id="nails-total"></span>
+      <br>
+      Yards: <span id="yards-total"></span>
+      <br>
+      Extra Needed for 6 inch fringe on one side: <span id="yards-fringe"></span>
+      <br>
+      <canvas id="canvas" width="500" , height="500"></canvas>
+    </div>
+    <br>
+    <div>Copyright Sammons 2021</div>
+  </div>
 </body>
+<script src="./app.js"></script>
+
 </html>
