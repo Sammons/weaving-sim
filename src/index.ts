@@ -57,6 +57,15 @@ const constructRow = (value: typeof state['entries'][number]) => {
   });
   return row;
 }
+const updateLink = () => {
+  const data = btoa(JSON.stringify(state.entries));
+  const base = window.location.toString();
+  const appended = '#data=' + data
+  const link = base + appended;
+  const linkText = document.getElementById(elementIds.linkText) as HTMLInputElement;
+  linkText.value = link;
+}
+
 const updateDom = () => {
   try {
     console.log('updating table')
@@ -116,6 +125,7 @@ const updateDom = () => {
     recalculateCanvas();
     // save state
     localStorage.setItem('state-v1', JSON.stringify(state));
+    updateLink();
   } catch (e) {
     console.log(e)
   }
@@ -126,6 +136,9 @@ const recalculateCanvas = () => {
   state.entries
     .sort((a, b) => a.idx - b.idx)
     .forEach(e => nailSum += e.nails);
+  if (state.entries.length === 0) {
+    return;
+  }
   const coordinates = [] as { x: number; y: number; }[];
   let curEntry = 0;
   let strokeLen = 0;
@@ -277,6 +290,8 @@ const elementIds = {
   nailsTotal: 'nails-total',
   yardsTotal: 'yards-total',
   yardsFringe: 'yards-fringe',
+  copyLink: 'copy-link',
+  linkText: 'link-text'
 }
 
 const toggleHexInputHandler = (e: Event) => {
@@ -347,8 +362,18 @@ const handlers = () => {
   const stored = localStorage.getItem('state-v1');
   if (stored) {
     Object.assign(state, JSON.parse(stored));
-    updateDom();
   }
+  if (window.location.hash && window.location.hash.includes('=')) {
+    const hashData = window.location.hash.replace('#data=', '');
+    try {
+      console.log(hashData)
+      state.entries = JSON.parse(atob(hashData))
+    } catch (e) {
+      console.log(e);
+    }
+    window.location.hash = ""
+  }
+  updateDom();
 }
 
 const canvas = document.getElementById('canvas') as HTMLCanvasElement
