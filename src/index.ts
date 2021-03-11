@@ -389,7 +389,3 @@ const main = () => {
 }
 
 main();
-
-window.onchange = () => {
-  window.location.reload();
-}
