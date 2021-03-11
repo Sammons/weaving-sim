@@ -59,7 +59,7 @@ const constructRow = (value: typeof state['entries'][number]) => {
 }
 const updateLink = () => {
   const data = btoa(JSON.stringify(state.entries));
-  const base = window.location.toString();
+  const base = window.location.toString().replace(/\?=?.*/, '');
   const appended = ('#data=' + data).replace(/#+/, '#');
   const link = base + appended;
   const linkText = document.getElementById(elementIds.linkText) as HTMLInputElement;
@@ -389,3 +389,7 @@ const main = () => {
 }
 
 main();
+
+window.onchange = () => {
+  window.location.reload();
+}
