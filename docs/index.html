@@ -146,6 +146,12 @@
           </p>
           <button class="pure-button" id='delete-rows'>Delete</button>
         </div>
+        <div class="pure-u-1-3">
+          <p>
+            Change selection
+          </p>
+          <button class="pure-button" id='select-all-toggle'>Toggle Select All</button>
+        </div>
       </div>
       <table hidden>
         <tbody id="prototype-row-container">
@@ -169,18 +175,30 @@
         <tbody id="data-table">
         </tbody>
       </table>
-      <br>
-      Total Nails (on one side): <span id="nails-total"></span>
-      <br>
-      Yards: <span id="yards-total"></span>
-      <br>
-      Extra Needed for 6 inch fringe on one side: <span id="yards-fringe"></span>
-      <br>
       <canvas id="canvas" width="500" , height="500"></canvas>
     </div>
     <div>
       <input class="pure-input-1-5" type="text" id="link-text"/>
     </div>
+    <br>
+    <br>
+    Total Nails (on one side): <span id="nails-total"></span>
+    Hypotenus (based on 0.32" between nails): <span id="hypotenus"></span>
+    <h3>Resource Breakdown (Under Construction)</h3>
+    <table class="pure-table pure-table-bordered" >
+      <thead>
+        <tr>
+          <th>Color</th>
+          <th>Nails</th>
+          <th>Yardage</th>
+          <th>6" Fringe</th>
+        </tr>
+      </thead>
+      <tbody id="yardage-table">
+
+      </tbody>
+    </table>
+      <br>
     <br>
     <div>Copyright Sammons 2021</div>
   </div>

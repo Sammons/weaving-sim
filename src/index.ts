@@ -1,12 +1,13 @@
 import { formatDiagnostic } from "typescript"
 
-const inchesBetweenNails = 0.3625;
+const inchesBetweenNails = 0.32;
 const inchesPerYard = 36;
 
 const state = {
   recentPicks: [] as string[],
   currentPick: "#0ff0ff",
   currentNails: 1,
+  selectAll: false,
   useHexCodes: false,
   selectedRows: [] as number[],
   entries: [] as {
@@ -71,8 +72,15 @@ const updateDom = () => {
     console.log('updating table')
     const table = document.getElementById(elementIds.dataTable);
     state.entries.sort((a, b) => a.idx - b.idx);
+    const remappedIdxes = {} as {
+      [key: number]: number;
+    };
     state.entries.forEach((e, i) => {
+      remappedIdxes[e.idx] = i
       e.idx = i;
+    });
+    state.selectedRows.forEach((e, i) => {
+      state.selectedRows[i] = remappedIdxes[e];
     })
     if (table) {
       Array.from(table.children).forEach(c => c.remove());
@@ -107,20 +115,29 @@ const updateDom = () => {
     }
     const yardage = document.getElementById(elementIds.yardsTotal);
     const fringe = document.getElementById(elementIds.yardsFringe);
-    if (yardage) {
-      let lengthOfOneSide = nailSum * inchesBetweenNails;
-      let lengthOfDiagonal = Math.sqrt(2 * (lengthOfOneSide * lengthOfOneSide)) * 2;
-      let netInches = nailSum * lengthOfDiagonal;
-      let yards = netInches / inchesPerYard;
-      const roundNum = (n: number) => {
-        const m = String(n).match(/(\d+\.?\d{0,2})\d*/);
-        return m ? m[1] : "";
-      }
-      yardage.innerHTML = roundNum(yards);
-      const _6InchFringeLengthPerNail = 12.0;
-      const _6InchFringeNeeded = _6InchFringeLengthPerNail * nailSum;
-      fringe!.innerHTML = `${roundNum(_6InchFringeNeeded / inchesPerYard)}`
+    const hypotenus = document.getElementById(elementIds.hypotenus);
+    if (hypotenus) {
+      const distanceOnOneSide = nailSum * inchesBetweenNails;
+      const hypotenusValue = Math.sqrt((distanceOnOneSide*distanceOnOneSide)*2);
+      const feet = Math.floor(hypotenusValue / 12)
+      const remainder = Math.ceil(hypotenusValue - (feet * 12));
+
+      hypotenus.innerHTML = `${feet}' ${remainder}"`
     }
+    // if (yardage) {
+    //   let lengthOfOneSide = nailSum * inchesBetweenNails;
+    //   let lengthOfDiagonal = Math.sqrt(2 * (lengthOfOneSide * lengthOfOneSide)) * 2;
+    //   let netInches = nailSum * lengthOfDiagonal;
+    //   let yards = netInches / inchesPerYard;
+    //   const roundNum = (n: number) => {
+    //     const m = String(n).match(/(\d+\.?\d{0,2})\d*/);
+    //     return m ? m[1] : "";
+    //   }
+    //   yardage.innerHTML = roundNum(yards);
+    //   const _6InchFringeLengthPerNail = 12.0;
+    //   const _6InchFringeNeeded = _6InchFringeLengthPerNail * nailSum;
+    //   fringe!.innerHTML = `${roundNum(_6InchFringeNeeded / inchesPerYard)}`
+    // }
     // capture
     recalculateCanvas();
     // save state
@@ -139,10 +156,11 @@ const recalculateCanvas = () => {
   if (state.entries.length === 0) {
     return;
   }
-  const coordinates = [] as { x: number; y: number; }[];
   let curEntry = 0;
   let strokeLen = 0;
+  const proportion = 120 / nailSum;
   if (context) {
+    context.lineWidth = proportion;
     context.clearRect(0, 0, canvas.width, canvas.height);
     context.beginPath();
     for (let i = 0; i < nailSum + 1; ++i) {
@@ -169,6 +187,8 @@ const recalculateCanvas = () => {
         context.beginPath();
         if (curEntry + 1 < state.entries.length) {
           curEntry++;
+        } else {
+          break;
         }
         strokeLen = 0;
       } else {
@@ -290,8 +310,10 @@ const elementIds = {
   nailsTotal: 'nails-total',
   yardsTotal: 'yards-total',
   yardsFringe: 'yards-fringe',
+  hypotenus: 'hypotenus',
   copyLink: 'copy-link',
-  linkText: 'link-text'
+  linkText: 'link-text',
+  selectAllToggle: 'select-all-toggle'
 }
 
 const toggleHexInputHandler = (e: Event) => {
@@ -326,7 +348,24 @@ const fixedElementHandlers = {
   normalColorInput: normalColorInputHandler,
   numberOfNailsInput: numberOfNailsInputHandler,
   reverseRows: reverseRows,
-  toggleHexInput: toggleHexInputHandler
+  toggleHexInput: toggleHexInputHandler,
+  selectAllToggle: () => {
+    console.log('select all')
+    if (!state.selectAll) {
+      state.selectAll = true;
+      state.selectedRows = state.entries.map(e => {
+        e.selected = true;
+        return e.idx
+      });
+    } else {
+      state.entries.forEach(e => {
+        e.selected = false;
+      })
+      state.selectAll = false;
+      state.selectedRows = [];
+    }
+    updateDom();
+  }
 };
 
 const handlers = () => {
